@@ -3,6 +3,11 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { useTheme } from './ThemeProvider';
 import { ChartData } from '@/types';
+import Animated, {
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+import { usePomodoro } from '@/hooks/usePomodoro';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -13,6 +18,19 @@ interface StatsChartProps {
 
 export const StatsChart: React.FC<StatsChartProps> = ({ data, title }) => {
   const { theme } = useTheme();
+
+  const { timerState, startTimer, pauseTimer, resetTimer, skipSession, formatTime } = usePomodoro();
+
+  const progress = useSharedValue(0);
+  const buttonScale = useSharedValue(1);
+
+  const totalTime = timerState.isBreak ? 5 * 60 : 25 * 60;
+  const currentProgress = 1 - (timerState.timeLeft / totalTime);
+
+  React.useEffect(() => {
+    progress.value = withTiming(currentProgress, { duration: 300 });
+  }, [currentProgress]);
+
 
   const chartConfig = {
     backgroundColor: theme.colors.surface,
@@ -86,8 +104,7 @@ export const StatsChart: React.FC<StatsChartProps> = ({ data, title }) => {
             style={{
               marginVertical: 8,
               borderRadius: 16,
-            }}
-          />
+            }} yAxisLabel={''} yAxisSuffix={''} />
         ) : (
           <Text style={styles.noDataText}>
             No data available for the last 7 days.{'\n'}

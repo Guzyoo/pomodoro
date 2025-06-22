@@ -24,11 +24,11 @@ export default function StatsScreen() {
     try {
       const sessions = await getLast7DaysSessions();
       const today = await getTodaySession();
-      
+
       // Create chart data for last 7 days
       const last7Days = [];
       const today_date = new Date();
-      
+
       for (let i = 6; i >= 0; i--) {
         const date = new Date(today_date);
         date.setDate(date.getDate() - i);
@@ -133,9 +133,9 @@ export default function StatsScreen() {
           </View>
         </View>
 
-        <StatsChart 
-          data={chartData} 
-          title="Last 7 Days" 
+        <StatsChart
+          data={chartData}
+          title="Last 7 Days"
         />
       </ScrollView>
     </View>
